@@ -8,6 +8,8 @@ import pandas as pd
 from Selenium4R import Chrome
 from bs4 import BeautifulSoup
 
+OUTPUT_DIR_NAME = r"D:\Temp"
+
 
 class SpiderHuyaLiveBarrage(tool.abc.LoopSpider):
     """虎牙直播弹幕爬虫"""
@@ -21,7 +23,8 @@ class SpiderHuyaLiveBarrage(tool.abc.LoopSpider):
         self.driver.get(live_url)
 
         # 读取直播间订阅数量
-        if label_subscribe := self.driver.find_element_by_xpath('//*[@id="activityCount"]'):
+        label_subscribe = self.driver.find_element_by_xpath('//*[@id="activityCount"]')
+        if label_subscribe:
             self.text_subscribe = label_subscribe.text
 
         # 等待页面渲染完成
@@ -133,17 +136,15 @@ if __name__ == "__main__":
 
         def stop(self):
             sheet_name = str(self.text_subscribe)
-            output_dir_name = r"E:\Temp"
             current_date = datetime.now()
             time_stamp = datetime.strftime(current_date, '%Y-%m-%d-%H-%M')
-            file_path = os.path.join(output_dir_name,
+            file_path = os.path.join(OUTPUT_DIR_NAME,
                                      r'{}.xlsx'.format(time_stamp))
             df = pd.DataFrame(data=self.continue_list, columns=['弹幕ID',
                                                                 '弹幕所属类型',
                                                                 '弹幕发布者名称',
                                                                 '贵族等级',
                                                                 '弹幕内容',
-
                                                                 '礼物名称',
                                                                 '礼物数量',
                                                                 '其他信息',
@@ -164,6 +165,6 @@ if __name__ == "__main__":
             super(MySpider, self).stop()
 
 
-    driver = Chrome(cache_path=r"E:\Temp")  # 打开Chrome浏览器
-    spider = MySpider(driver=driver, live_url="https://www.huya.com/22819541", count_number=1200)
+    driver = Chrome(cache_path=OUTPUT_DIR_NAME)  # 打开Chrome浏览器
+    spider = MySpider(driver=driver, live_url="https://www.huya.com/22819541", count_number=60)
     spider.start()

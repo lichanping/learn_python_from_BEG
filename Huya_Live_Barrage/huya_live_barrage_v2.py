@@ -10,7 +10,7 @@ from Selenium4R import Chrome
 from bs4 import BeautifulSoup
 from openpyxl import load_workbook
 
-OUTPUT_DIR_NAME = r"E:\Temp"
+OUTPUT_DIR_NAME = r"D:\Temp"
 NAME_MAP_URLS = [
     ['MK-少女情怀', 'https://www.huya.com/22819541'],
     ['快乐从和辣妹一起蹦迪开始', 'https://www.huya.com/17055318'],
@@ -18,7 +18,7 @@ NAME_MAP_URLS = [
     ['年华：御用歌手公子轩', 'https://www.huya.com/21374754']
 ]
 INDEX = 0
-COUNT_NUMBER = 60 * 10
+COUNT_NUMBER = 1
 
 
 class SpiderHuyaLiveBarrage(tool.abc.LoopSpider):
@@ -145,6 +145,7 @@ if __name__ == "__main__":
                                           r'{}.xlsx'.format(self.file_name))
 
         def write(self, data):
+            sheetname = 'Sheet1'
             df = pd.DataFrame(data=data, columns=['弹幕ID',
                                                   '弹幕所属类型',
                                                   '弹幕发布者名称',
@@ -155,16 +156,29 @@ if __name__ == "__main__":
                                                   '其他信息',
                                                   '弹幕采集时间'])
             if os.path.isfile(self.file_path):
-                sheetname = 'Sheet1'
-                writer = pd.ExcelWriter(self.file_path, engine='xlsxwriter')
-                load_workbook(self.file_path)
-                writer.book = load_workbook(self.file_path)
+
+                book = load_workbook(self.file_path)
+                writer = pd.ExcelWriter(self.file_path, engine='openpyxl')
+                writer.book = book
+                writer.sheets = {ws.title: ws for ws in book.worksheets}
                 startrow = writer.book[sheetname].max_row
                 df.to_excel(writer, sheet_name=sheetname, startrow=startrow, index=False,
                             header=False)
-
+                writer.save()
             else:
-                df.to_excel(self.file_path, index=False, header=True)
+                # df.to_excel(self.file_path, index=False, header=True)
+
+                # Create a Pandas Excel writer using XlsxWriter as the engine.
+                writer = pd.ExcelWriter(self.file_path, engine='xlsxwriter')
+                # Convert the dataframe to an XlsxWriter Excel object.
+                df.to_excel(writer, sheet_name=sheetname, index=False)
+                # Get the xlsxwriter worksheet object.
+                worksheet = writer.sheets[sheetname]
+                # Set the column width and format.
+                worksheet.set_column(1, 2, 20)  # 更改宽度值index=1,2的列
+                worksheet.set_column(4, 4, 70)  # 更改宽度值index=4的列
+                # Close the Pandas Excel writer and output the Excel file.
+                writer.save()
 
         def stop(self):
             subscribe_count = str(self.text_subscribe)

@@ -13,18 +13,19 @@ from openpyxl import load_workbook
 OUTPUT_DIR_NAME = r"D:\Temp"
 NAME_MAP_URLS = [
     ['MK-少女情怀', 'https://www.huya.com/22819541'],
-    ['快乐从和辣妹一起蹦迪开始', 'https://www.huya.com/17055318'],
-    ['鱼塘_虎牙只有一个象_那就是大象', 'https://www.huya.com/78315'],
-    ['年华：御用歌手公子轩', 'https://www.huya.com/21374754']
+    ['MK-快乐迪厅', 'https://www.huya.com/17055318'],
+    ['鱼塘-如梦初醒', 'https://www.huya.com/78315'],
+    ['MK-夏日甜心', 'https://www.huya.com/21374754'],
+    ['MK-温柔乡', 'https://www.huya.com/23038439'],
 ]
-INDEX = 0
-COUNT_NUMBER = 1
+INDEX = -1
+COUNT_NUMBER = 60*60
 
 
 class SpiderHuyaLiveBarrage(tool.abc.LoopSpider):
     """虎牙直播弹幕爬虫"""
 
-    def __init__(self, driver, live_url, interval, count_number=10):
+    def __init__(self, driver, live_url, interval, count_number):
         super().__init__(interval)
         self.driver = driver
         self.text_subscribe = 0

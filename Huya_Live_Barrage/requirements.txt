@@ -4,3 +4,6 @@ pandas
 Selenium4R
 pyinstaller
 xlsxwriter
+mysql
+SQLAlchemy
+sqlalchemy
